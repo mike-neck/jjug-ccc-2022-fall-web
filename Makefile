@@ -1,7 +1,8 @@
-ANT_BIN_PATH := "lib/ant/apache-ant-1.10.12/bin"
-ANT :=  "$$(if [[ -d "${ANT_BIN_PATH}" ]]; then echo "${ANT_BIN_PATH}/ant"; else echo ""; fi)"
-IVY_PATH := "lib/ant/apache-ivy-2.5.1"
-IVY := "$$(if [[ -d "${IVY_PATH}" ]]; then echo "${IVY_PATH}/ivy-2.5.1.jar"; else echo ""; fi)"
+ANT := "${PWD}/lib/ant/apache-ant-1.10.12/bin/ant"
+ANT := "$(shell if [[ -x "${ANT}" ]]; then echo "${ANT}"; else echo ""; fi)"
+
+IVY_PATH := "lib/ivy/apache-ivy-2.5.1"
+IVY := "${PWD}/lib/ivy/apache-ivy-2.5.1/ivy-2.5.1.jar"
 
 ifeq ("${ANT}", "")
 .PHONY: init
@@ -26,10 +27,6 @@ init-ivy:
 	@unzip "lib/ivy-bin.zip" -d "lib/ivy"
 endif
 
-.PHONY: test
-test:
-	echo "test"
-
 ifeq ("${PROJECT}", "")
 
 .PHONY: run
@@ -44,33 +41,40 @@ clean:
 
 else # if PROJECT
 
-PROJECT_DIR := "$$(if [[ -d "${PROJECT}" ]]; then echo "${PROJECT}"; else echo ""; fi)"
-
-ifneq ("${PROJECT_DIR}", "${PROJECT}")
-
-.PHONY: run
-run:
-	@echo "run"
-	@echo "directory '${PROJECT}' not found"
-
-.PHONY: clean
-clean:
-	@echo "clean"
-	@echo "directory '${PROJECT}' not found"
-
-else  # if PROJECT_DIR
+.PHONY: resolve
+resolve:
+	@echo "resolve"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" resolve
+	@./mk-iml.sh "${PROJECT}"
 
 .PHONY: run
 run:
 	@echo "run"
-	@echo "directory '${PROJECT_DIR}'"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" run
 
 .PHONY: clean
 clean:
 	@echo "clean"
-	@echo "directory '${PROJECT_DIR}'"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" clean
 
-endif # if PROJECT_DIR
+.PHONY: clean-deps
+clean-deps:
+	@echo "clean"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@rm -rf "${PROJECT}/lib"
+
+
 endif # if PROJECT
 
 .PHONY: help
