@@ -109,3 +109,26 @@ help:
 	@echo "           - PROJECT: (env variable) the name of application"
 	@echo "    clean: cleans application artifact"
 	@echo "           - PROJECT: (env variable) the name of application"
+
+REQUEST_SEC := "$(shell if [[ -z "${REQUEST_SEC}" ]]; then echo "120" ; else echo "${REQUEST_SEC}"; fi)"
+DURATION := "$(shell if [[ -z "${DURATION}" ]]; then echo "60" ; else echo "${DURATION}"; fi)"
+TOTAL := "$(shell echo "${REQUEST_SEC} * ${DURATION}" | bc)"
+ABC := "$(shell which "ab")"
+REQUEST_ID := "$(shell ./scripts/request-id.sh)"
+
+.PHONY: test
+test:
+	@echo "Running test"
+	@echo "parameters:"
+	@echo "  request/sec: ${REQUEST_SEC}"
+	@echo "  duration   : ${DURATION} sec"
+	@echo "  total req  : ${TOTAL}"
+	@echo "command: ${ABC}"
+	@echo "header: ${REQUEST_ID}"
+	@"${ABC}" \
+			-n "${TOTAL}" \
+			-c "${REQUEST_SEC}" \
+			-t "${DURATION}" \
+			-s 5 \
+			-H "X-ID:${REQUEST_ID}" \
+			http://localhost:8080/api
