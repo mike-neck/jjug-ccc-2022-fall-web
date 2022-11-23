@@ -52,7 +52,8 @@ new:
 	@echo "ant=${ANT}"
 	@echo "ivy=${IVY}"
 	@echo "project=${PROJECT}"
-	@mkdir -p "${PROJECT}"
+	@mkdir -p "${PROJECT}/src/com/example"
+	@mkdir -p "${PROJECT}/resources"
 	@./scripts/build-xml.sh "${PROJECT}"
 	@./scripts/ivy-xml.sh "${PROJECT}"
 
@@ -64,6 +65,14 @@ resolve:
 	@echo "project=${PROJECT}"
 	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" resolve
 	@./scripts/mk-iml.sh "${PROJECT}"
+
+.PHONY: compile
+compile:
+	@echo "compile"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" compile
 
 .PHONY: run
 run:
@@ -87,7 +96,7 @@ clean-deps:
 	@echo "ant=${ANT}"
 	@echo "ivy=${IVY}"
 	@echo "project=${PROJECT}"
-	@rm -rf "${PROJECT}/lib"
+	@rm -rf "${PROJECT}/build/libs"
 
 
 endif # if PROJECT

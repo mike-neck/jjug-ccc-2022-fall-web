@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ivy-module version="2.0">
+    <info organisation="com.example" module="traditional-server"/>
+    <configurations>
+        <conf name="compile" extends="runtime" description="compileClasspath + runtimeClasspath" />
+        <conf name="runtime" description="runtimeClasspath"/>
+    </configurations>
+    <dependencies>
+        <dependency name="annotations" rev="23.0.0" org="org.jetbrains" conf="compile->default" />
+        <dependency name="jackson-databind" rev="2.13.4" org="com.fasterxml.jackson.core" conf="runtime->default"/>
+    </dependencies>
+</ivy-module>

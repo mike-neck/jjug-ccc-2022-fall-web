@@ -4,6 +4,12 @@ set -eou
 
 project="${1}"
 
+if [[ -f "${project}/build.xml" ]]; then
+    echo "build definition(${project}/build.xml) exists"
+    exit 0
+fi
+echo "generating build definition(${project}/build.xml)"
+
 cat<<EOF > "${project}/build.xml"
 <?xml version="1.0" encoding="UTF-8" ?>
 <project
@@ -58,6 +64,7 @@ cat<<EOF > "${project}/build.xml"
                 classname="com.example.Background"
                 fork="true"
         >
+            <jvmarg value="--enable-preview"/>
         </java>
     </target>
 

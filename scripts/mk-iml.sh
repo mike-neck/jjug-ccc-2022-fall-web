@@ -4,6 +4,15 @@ set -eou
 
 project="${1}"
 
+outputFile="${project}/${project}.iml"
+
+if [[ -f "${outputFile}" ]]; then
+  echo "IDEA file already exists"
+  exit 0
+fi
+
+echo "Generating IDEA file"
+
 cat<<EOF > "${project}/${project}.iml"
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
