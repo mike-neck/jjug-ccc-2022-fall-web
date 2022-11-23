@@ -29,6 +29,11 @@ endif
 
 ifeq ("${PROJECT}", "")
 
+.PHONY: new
+new:
+	@echo "new"
+	@echo "no PROJECT defined"
+
 .PHONY: run
 run:
 	@echo "run"
@@ -41,6 +46,16 @@ clean:
 
 else # if PROJECT
 
+.PHONY: new
+new:
+	@echo "new"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@mkdir -p "${PROJECT}"
+	@./scripts/build-xml.sh "${PROJECT}"
+	@./scripts/ivy-xml.sh "${PROJECT}"
+
 .PHONY: resolve
 resolve:
 	@echo "resolve"
@@ -48,7 +63,7 @@ resolve:
 	@echo "ivy=${IVY}"
 	@echo "project=${PROJECT}"
 	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" resolve
-	@./mk-iml.sh "${PROJECT}"
+	@./scripts/mk-iml.sh "${PROJECT}"
 
 .PHONY: run
 run:
