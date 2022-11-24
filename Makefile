@@ -1,10 +1,10 @@
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := list
 
 ANT_PATH := "${PWD}/lib/ant/apache-ant-1.10.12/bin/ant"
 ANT := "$(shell if [[ -x "${ANT_PATH}" ]]; then echo "${ANT_PATH}"; else echo ""; fi)"
 
 IVY_PATH := "${PWD}/lib/ivy/apache-ivy-2.5.1/ivy-2.5.1.jar"
-IVY := "$(shell if [[ -x "${IVY_PATH}" ]]; then echo "${IVY_PATH}" else echo ""; fi)"
+IVY := "$(shell if [[ -f "${IVY_PATH}" ]]; then echo "${IVY_PATH}" else echo ""; fi)"
 
 ifeq ("${ANT}", "")
 ifeq ("${IVY}", "")
@@ -72,6 +72,13 @@ resolve:
 	@echo "ivy=${IVY}"
 	@echo "project=${PROJECT}"
 	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" resolve
+
+.PHONY: idea
+idea:
+	@echo "resolve"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
 	@./scripts/mk-iml.sh "${PROJECT}"
 
 .PHONY: compile
@@ -109,15 +116,6 @@ clean-deps:
 
 endif # if PROJECT
 
-.PHONY: help
-help:
-	@echo "targets"
-	@echo "    init : initializes ant/ivy"
-	@echo "    run  : runs application"
-	@echo "           - PROJECT: (env variable) the name of application"
-	@echo "    clean: cleans application artifact"
-	@echo "           - PROJECT: (env variable) the name of application"
-
 REQUEST_SEC := "$(shell if [[ -z "${REQUEST_SEC}" ]]; then echo "120" ; else echo "${REQUEST_SEC}"; fi)"
 DURATION := "$(shell if [[ -z "${DURATION}" ]]; then echo "60" ; else echo "${DURATION}"; fi)"
 TOTAL := "$(shell echo "${REQUEST_SEC} * ${DURATION}" | bc)"
@@ -140,3 +138,12 @@ test:
 			-s 5 \
 			-H "X-ID:${REQUEST_ID}" \
 			http://localhost:8080/api
+
+.PHONY: list
+list:
+	@make -f Makefile -p |\
+		grep -B 1 "Phony target" |\
+		grep -v "Phony target" |\
+		grep -v "commands to execute" |\
+		grep ":" |\
+		tr -d ':'
