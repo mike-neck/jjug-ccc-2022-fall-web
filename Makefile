@@ -1,13 +1,19 @@
-ANT := "${PWD}/lib/ant/apache-ant-1.10.12/bin/ant"
-ANT := "$(shell if [[ -x "${ANT}" ]]; then echo "${ANT}"; else echo ""; fi)"
+.DEFAULT_GOAL := help
 
-IVY_PATH := "lib/ivy/apache-ivy-2.5.1"
-IVY := "${PWD}/lib/ivy/apache-ivy-2.5.1/ivy-2.5.1.jar"
+ANT_PATH := "${PWD}/lib/ant/apache-ant-1.10.12/bin/ant"
+ANT := "$(shell if [[ -x "${ANT_PATH}" ]]; then echo "${ANT_PATH}"; else echo ""; fi)"
+
+IVY_PATH := "${PWD}/lib/ivy/apache-ivy-2.5.1/ivy-2.5.1.jar"
+IVY := "$(shell if [[ -x "${IVY_PATH}" ]]; then echo "${IVY_PATH}" else echo ""; fi)"
 
 ifeq ("${ANT}", "")
+ifeq ("${IVY}", "")
 .PHONY: init
 init: init-ant init-ivy
+endif
+endif
 
+ifeq ("${ANT}","")
 .PHONY: init-ant
 init-ant:
 	@ [[ -d "lib" ]] || mkdir "lib";
@@ -16,7 +22,9 @@ init-ant:
 		--url "https://dlcdn.apache.org//ant/binaries/apache-ant-1.10.12-bin.zip" \
 		--output "lib/ant-bin.zip"
 	@unzip "lib/ant-bin.zip" -d "lib/ant"
+endif
 
+ifeq ("${IVY}","")
 .PHONY: init-ivy
 init-ivy:
 	@ [[ -d "lib" ]] || mkdir "lib";
