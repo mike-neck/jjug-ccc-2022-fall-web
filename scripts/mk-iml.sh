@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 
-set -eou
+set -euo pipefail
 
 project="${1}"
+
+if [[ -z "${project}" ]]; then
+    echo "project not defined(0=${0} 1=${1})"
+    exit 1
+fi
 
 outputFile="${project}/${project}.iml"
 
@@ -11,9 +16,9 @@ if [[ -f "${outputFile}" ]]; then
   exit 0
 fi
 
-echo "Generating IDEA file"
+echo "Generating IDEA file ${outputFile}"
 
-cat<<EOF > "${project}/${project}.iml"
+cat<<EOF > "${outputFile}"
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">

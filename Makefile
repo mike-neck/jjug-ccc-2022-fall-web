@@ -4,7 +4,9 @@ ANT_PATH := "${PWD}/lib/ant/apache-ant-1.10.12/bin/ant"
 ANT := "$(shell if [[ -x "${ANT_PATH}" ]]; then echo "${ANT_PATH}"; else echo ""; fi)"
 
 IVY_PATH := "${PWD}/lib/ivy/apache-ivy-2.5.1/ivy-2.5.1.jar"
-IVY := "$(shell if [[ -f "${IVY_PATH}" ]]; then echo "${IVY_PATH}" else echo ""; fi)"
+IVY := "$(shell if [[ -f "${IVY_PATH}" ]]; then echo "${IVY_PATH}"; else echo ""; fi)"
+
+PROJECT := "$(subst /,,"${PROJECT}")"
 
 ifeq ("${ANT}", "")
 ifeq ("${IVY}", "")
