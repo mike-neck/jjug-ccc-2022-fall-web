@@ -56,6 +56,29 @@
         </java>
     </target>
 
+    <target name="run-virtual" depends="resources,compile">
+        <java
+                classpathref="runtime-path"
+                classname="com.example.JdkServer"
+                fork="true"
+        >
+            <jvmarg value="--enable-preview"/>
+            <arg value="virtual"/>
+        </java>
+    </target>
+
+    <target name="run-platform" depends="resources,compile">
+        <java
+                classpathref="runtime-path"
+                classname="com.example.JdkServer"
+                fork="true"
+        >
+            <jvmarg value="--enable-preview"/>
+            <arg value="platform"/>
+            <arg value="100"/>
+        </java>
+    </target>
+
     <target name="clean">
         <delete dir="${classes-dir}"/>
         <delete dir="${resources-dir}"/>

@@ -6,7 +6,7 @@ ANT := "$(shell if [[ -x "${ANT_PATH}" ]]; then echo "${ANT_PATH}"; else echo ""
 IVY_PATH := "${PWD}/lib/ivy/apache-ivy-2.5.1/ivy-2.5.1.jar"
 IVY := "$(shell if [[ -f "${IVY_PATH}" ]]; then echo "${IVY_PATH}"; else echo ""; fi)"
 
-PROJECT := "$(subst /,,"${PROJECT}")"
+PROJECT := $(subst /,,"${PROJECT}")
 
 ifeq ("${ANT}", "")
 ifeq ("${IVY}", "")
@@ -119,9 +119,43 @@ clean-deps:
 
 endif # if PROJECT
 
-REQUEST_SEC := "$(shell if [[ -z "${REQUEST_SEC}" ]]; then echo "120" ; else echo "${REQUEST_SEC}"; fi)"
+$(info $(PROJECT))
+
+ifeq ($(PROJECT),"traditional-server")
+
+.PHONY: run-virtual
+run-virtual:
+	@echo "run"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" run-virtual
+
+
+.PHONY: run-platform
+run-platform:
+	@echo "run"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" run-platform
+
+TYPES := virtual platform
+define ShowType
+
+.PHONY: $(1)-show
+$(1)-show:
+	@echo "type: $(1)"
+
+endef
+
+$(foreach tp,$(TYPES),$(eval $(call ShowType,$(tp))))
+
+endif
+
+PARALLEL := "$(shell if [[ -z "${PARALLEL}" ]]; then echo "120" ; else echo "${PARALLEL}"; fi)"
 DURATION := "$(shell if [[ -z "${DURATION}" ]]; then echo "60" ; else echo "${DURATION}"; fi)"
-TOTAL := "$(shell echo "${REQUEST_SEC} * ${DURATION}" | bc)"
+TOTAL := "$(shell echo "${PARALLEL} * ${DURATION}" | bc)"
 ABC := "$(shell which "ab")"
 REQUEST_ID := "$(shell ./scripts/request-id.sh)"
 
@@ -129,14 +163,14 @@ REQUEST_ID := "$(shell ./scripts/request-id.sh)"
 test:
 	@echo "Running test"
 	@echo "parameters:"
-	@echo "  request/sec: ${REQUEST_SEC}"
+	@echo "  request/sec: ${PARALLEL}"
 	@echo "  duration   : ${DURATION} sec"
 	@echo "  total req  : ${TOTAL}"
 	@echo "command: ${ABC}"
 	@echo "header: ${REQUEST_ID}"
 	@"${ABC}" \
 			-n "${TOTAL}" \
-			-c "${REQUEST_SEC}" \
+			-c "${PARALLEL}" \
 			-t "${DURATION}" \
 			-s 5 \
 			-H "X-ID:${REQUEST_ID}" \

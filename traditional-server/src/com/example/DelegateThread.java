@@ -76,11 +76,6 @@ class DelegateThread extends Thread {
 
     @Override
     public void start() {
-        try {
-            delegate.start();
-        } catch (Throwable e) {
-            JdkServer.EXCEPTION_HANDLER.uncaughtException(this, e);
-            throw e;
-        }
+        delegate.start();
     }
 }

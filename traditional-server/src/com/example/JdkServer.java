@@ -5,7 +5,6 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -21,20 +20,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("RedundantStringFormatCall")
 public class JdkServer implements HttpHandler {
 
     static final int SERVER_PORT = 8080;
-    static final int SERVER_THREAD_SIZE = Integer.MAX_VALUE;
-
     public static void main(String[] args) throws IOException, InterruptedException {
+        ServerType serverType = ServerType.parse(args);
         CountDownLatch latch = new CountDownLatch(1);
-        ServerType serverType = ServerType.PLATFORM_THREAD;
         try (
                 ExecutorService executor = serverType.executor(latch::countDown);
                 ExecutorService client = Executors.newFixedThreadPool(2)
@@ -49,81 +45,6 @@ public class JdkServer implements HttpHandler {
             latch.await();
             server.stop(0);
         }
-    }
-
-    private static @NotNull ExecutorService virtualThread() {
-        var factory = Thread.ofVirtual()
-                .name("v-thread-server-", 1L)
-                .allowSetThreadLocals(true)
-                .inheritInheritableThreadLocals(true)
-                .factory();
-        return Executors.newThreadPerTaskExecutor(factory);
-    }
-
-    enum ServerType {
-        VIRTUAL_THREAD {
-            @Override
-            @NotNull ExecutorService executor(@NotNull Runnable abort) {
-                return virtualThread();
-            }
-
-            @Override
-            void showCondition() {
-                System.out.println("====");
-                System.out.println(this);
-                System.out.println("====");
-            }
-        },
-        PLATFORM_THREAD {
-            @Override
-            @NotNull ExecutorService executor(@NotNull Runnable abort) {
-                return platformThread(e -> {
-                    e.printStackTrace();
-                    System.out.println("========");
-                    System.out.println("error : " + e);
-                    System.out.println("abort server");
-                    abort.run();
-                });
-            }
-
-            @Override
-            void showCondition() {
-                System.out.println("====");
-                System.out.println(this);
-                System.out.println("Threads = " + SERVER_THREAD_SIZE);
-                System.out.println("====");
-            }
-        },
-        ;
-        abstract @NotNull ExecutorService executor(@NotNull Runnable abort);
-        abstract void showCondition();
-    }
-
-    static final Thread.UncaughtExceptionHandler EXCEPTION_HANDLER = (thread, exception) -> {
-        Thread th = Thread.currentThread();
-        System.out.println("unhandled exception[%s]: thread=%s, exception=%s".formatted(th.getName(), thread.getName(), exception.getClass()));
-        exception.printStackTrace(System.out);
-        if (exception instanceof Error error) {
-            throw error;
-        }
-    };
-
-    private static @NotNull ExecutorService platformThread(@NotNull Consumer<Throwable> onError) {
-
-        var delegate = Thread.ofPlatform()
-                .name("normal-server-", 1L)
-                .allowSetThreadLocals(true)
-                .inheritInheritableThreadLocals(true)
-                .uncaughtExceptionHandler(EXCEPTION_HANDLER)
-                .factory();
-        ThreadFactory factory = (runnable) -> {
-            Thread thread = delegate.newThread(runnable);
-            return new DelegateThread(thread);
-        };
-        ExecutorService executorService = Executors.newFixedThreadPool(
-                SERVER_THREAD_SIZE, factory
-        );
-        return new ServerExecutor(executorService, onError);
     }
 
     record ReqSeq(int value) {
@@ -209,24 +130,6 @@ public class JdkServer implements HttpHandler {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @SuppressWarnings("resource")
-    static @NotNull Closeable blocker(@NotNull CountDownLatch latch) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(() -> {
-            RuntimeException ex = null;
-            try {
-                System.in.read();
-            } catch (IOException e) {
-                ex = new RuntimeException(e);
-            }
-            latch.countDown();
-            if (ex != null) {
-                throw ex;
-            }
-        });
-        return executor::close;
     }
 
     static void logRequest(@NotNull Instant start, @Nullable String userId, @NotNull String xid) {
