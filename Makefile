@@ -82,6 +82,7 @@ idea:
 	@echo "ivy=${IVY}"
 	@echo "project=${PROJECT}"
 	@./scripts/mk-iml.sh "${PROJECT}"
+	@./scripts/run-xml.sh "${PROJECT}"
 
 .PHONY: compile
 compile:

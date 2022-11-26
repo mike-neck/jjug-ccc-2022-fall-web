@@ -48,7 +48,7 @@
     <target name="run" depends="resources,compile">
         <java
                 classpathref="runtime-path"
-                classname="com.example.Background"
+                classname="com.example.AsyncServer"
                 fork="true"
         >
             <jvmarg value="--enable-preview"/>
