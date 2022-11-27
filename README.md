@@ -46,7 +46,7 @@ OOMが見たいのではない、性能劣化が見たいのだ！という方�
 PROJECT=traditional-server make run-platform
 ```
 
-詳しくは[こちら](./tree/main/docs/1-1.oom.md)
+詳しくは[こちら](./docs/1-1.oom.md)
 
 ##### 非同期スタイルサーバー
 
