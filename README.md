@@ -58,19 +58,24 @@ I/O呼び出しによるブロッキングとサーバーのスループット�
 
 - `spring-boot-2.7.4`の`SpringDbExample`クラスに`VirtualThread`の`ExecutorService`を使った`@Bean`を登録していますわ
 - `spring-boot-2.7.4` を実行してくださいまし！
-- テスト(T.B.D)すると、/api で度々`PIN`が発生しますわ！
+- テスト(`db-app-tester`)を起動してくださいまし！
+    - わざと`synchronized`にしている`/api`エンドポイント由来の`PIN`が発生しますわ！
 
 ##### PIN回避
 
 - `spring-boot-2.7.4`の`useLock`バージョンを実行してくださいまし！
-  - `PROJECT=spring-boot-2.7.4 make run-lock` ですわよ！
-- テスト(T.B.D.)すると、/api の`PIN`がなくなりますわ！
+    - `PROJECT=spring-boot-2.7.4 make run-lock` ですわよ！
+- テスト(`db-app-tester`)を起動してくだいまし！
+    - `/api` 由来の`PIN`が消えますわ！`java.util.concurrent.Lock`は素晴らしいですわ〜！
 
 ##### Spring Boot サーバー3.0.x
 
 Tomcat の `PIN` 回避バージョンが適用されますわ！
 
-T.B.D.
+- `spring-boot-3` を起動してくださいまし！
+- テスト(`db-app-tester`)を起動してくださいまし！
+    - Tomcat由来の`PIN`はもう発生しませんわ！楽勝ですわ！
+    - 残念ながらmysqlからの`PIN`はまだ発生しますわ！
 
 ---
 
