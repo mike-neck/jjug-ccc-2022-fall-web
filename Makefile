@@ -153,6 +153,18 @@ $(foreach tp,$(TYPES),$(eval $(call ShowType,$(tp))))
 
 endif
 
+ifeq ($(PROJECT),"spring-boot-2.7.4")
+
+.PHONY: run-lock
+run-lock:
+	@echo "run"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" run-lock
+
+endif
+
 PARALLEL := "$(shell if [[ -z "${PARALLEL}" ]]; then echo "120" ; else echo "${PARALLEL}"; fi)"
 DURATION := "$(shell if [[ -z "${DURATION}" ]]; then echo "60" ; else echo "${DURATION}"; fi)"
 TOTAL := "$(shell echo "${PARALLEL} * ${DURATION}" | bc)"

@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  database:
+    image: mysql:8.0-debian
+    platform: linux/x86_64
+    ports:
+      - "3306:3306"
+    env_file:
+      - "database/.env.mysql"
+    volumes:
+      - type: bind
+        source: "./database/sql"
+        target: "/docker-entrypoint-initdb.d"
