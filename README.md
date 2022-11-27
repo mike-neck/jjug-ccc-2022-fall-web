@@ -39,6 +39,15 @@ I/O呼び出しによるブロッキングとサーバーのスループット�
 - `traditional-server` を実行してくださいまし！
 - `make test` でテストすると1分ほどで落ちますわよ！
 
+OOMが見たいのではない、性能劣化が見たいのだ！という方は、 `traditional-server` を以下の方法で実行してくださいまし！
+サーバーが最大`100`スレッドで起動いたしますわ！このサーバーに対して`make test`すると性能劣化がわかりますわ！
+
+```shell
+PROJECT=traditional-server make run-platform
+```
+
+詳しくは[こちら](./tree/main/docs/1-1.oom.md)
+
 ##### 非同期スタイルサーバー
 
 - `async-server` を実行してくださいまし！
