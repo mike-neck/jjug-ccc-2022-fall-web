@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ivy-module version="2.0">
+    <info organisation="com.example" module="spring-boot-3.0.0"/>
+    <configurations>
+        <conf name="compile" extends="runtime" description="compileClasspath + runtimeClasspath" />
+        <conf name="runtime" description="runtimeClasspath"/>
+    </configurations>
+    <dependencies>
+        <dependency org="org.springframework.boot" name="spring-boot-starter-web" rev="3.0.0" conf="compile->compile;runtime->runtime"/>
+        <dependency org="org.springframework.boot" name="spring-boot-starter-data-jdbc" rev="3.0.0" conf="compile->default;runtime->runtime"/>
+        <dependency org="org.springframework.boot" name="spring-boot-starter-actuator" rev="3.0.0" conf="compile->compile;runtime->runtime"/>
+        <dependency name="mysql-connector-java" rev="8.0.30" org="mysql" conf="runtime->master" />
+        <dependency name="annotations" rev="23.0.0" org="org.jetbrains" conf="compile->default" />
+    </dependencies>
+</ivy-module>
