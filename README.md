@@ -9,9 +9,70 @@ JJUG CCC 2022 Fall の補足用のレポジトリー
 PROJECT=backend make run
 ```
 
+環境
+---
+
+- M2 Mac book pro
+- Mac OS Ventura 13.0.1
+- RAM 24GB
+
+実行用ソフトウェア
+---
+
+- Java19
+- Make 3.81〜
+- ab (Apache Bench)
+- bash
+- curl/grep/tr/unzip
+
 内容
 ---
 
+- `backend` プロジェクトを起動してくださいまし！
+
+### 前半
+
+I/O呼び出しによるブロッキングとサーバーのスループット性能劣化について説明いたしましたわ！
+
+##### OOMしてしまうthread per request styleサーバー
+
+- `traditional-server` を実行してくださいまし！
+- `make test` でテストすると1分ほどで落ちますわよ！
+
+##### 非同期スタイルサーバー
+
+- `async-server` を実行してくださいまし！
+- `make test` しても性能劣化しませんわ！
+
+##### VirtualThreadを使うthread per request styleサーバー
+
+- `traditional-server` で virtual thread サーバーを実行してくださいまし！
+  - `PROJECT=traditional-server make run-virtual` ですわよ！
+- `make test` しても性能劣化しませんわ！
+
+### 後半
+
+アプリケーションの移行、PIN診断・回避について説明いたしましたわ！
+
+##### Spring Boot サーバーの移行とPIN
+
+- `spring-boot-2.7.4`の`SpringDbExample`クラスに`VirtualThread`の`ExecutorService`を使った`@Bean`を登録していますわ
+- `spring-boot-2.7.4` を実行してくださいまし！
+- テスト(T.B.D)すると、/api で度々`PIN`が発生しますわ！
+
+##### PIN回避
+
+- `spring-boot-2.7.4`の`useLock`バージョンを実行してくださいまし！
+  - `PROJECT=spring-boot-2.7.4 make run-lock` ですわよ！
+- テスト(T.B.D.)すると、/api の`PIN`がなくなりますわ！
+
+##### Spring Boot サーバー3.0.x
+
+Tomcat の `PIN` 回避バージョンが適用されますわ！
+
+T.B.D.
+
+---
 
 Makefile
 ---
