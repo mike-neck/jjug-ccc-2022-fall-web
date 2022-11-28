@@ -122,34 +122,13 @@ endif # if PROJECT
 $(info $(PROJECT))
 
 ifeq ($(PROJECT),"traditional-server")
-
-.PHONY: run-virtual
-run-virtual:
-	@echo "run"
-	@echo "ant=${ANT}"
-	@echo "ivy=${IVY}"
-	@echo "project=${PROJECT}"
-	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" run-virtual
-
-
-.PHONY: run-platform
-run-platform:
-	@echo "run"
-	@echo "ant=${ANT}"
-	@echo "ivy=${IVY}"
-	@echo "project=${PROJECT}"
-	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" run-platform
-
 TYPES := virtual platform
-define ShowType
-
-.PHONY: $(1)-show
-$(1)-show:
-	@echo "type: $(1)"
-
-endef
-
-$(foreach tp,$(TYPES),$(eval $(call ShowType,$(tp))))
+$(foreach thread,$(TYPES),run-$(thread)):
+	@echo "run"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@cd "${PROJECT}"; "${ANT}" -lib "${IVY}" $@
 
 endif
 
