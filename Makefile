@@ -188,6 +188,14 @@ test:
 			-H "X-ID:${REQUEST_ID}" \
 			http://localhost:8080/api
 
+.PHONY: shutdown
+shutdown:
+	@echo "shutdown"
+	@echo "ant=${ANT}"
+	@echo "ivy=${IVY}"
+	@echo "project=${PROJECT}"
+	@./scripts/shutdown.sh "${PROJECT}"
+
 .PHONY: list
 list:
 	@make -f Makefile -p |\
